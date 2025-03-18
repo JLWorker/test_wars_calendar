@@ -34,16 +34,13 @@ public class MagicCalendar {
      *
      */
     public boolean scheduleMeeting(String user, String time, MeetingType type) {
-        if (!storage.containsKey(user)) {
-            return false;
-        }
         List<Map.Entry<String, MeetingType>> userTimes = storage.get(user);
+        if (userTimes == null) {
+            storage.put(user, List.of(Map.entry(time, MeetingType.PERSONAL)));
+            return true;
+        }
         if (userTimes.size() >= 5) {
             return false;
-        }
-        if (userTimes.isEmpty()) {
-            userTimes.add(Map.entry(time, MeetingType.PERSONAL));
-            return true;
         }
         Map.Entry<String, MeetingType> userMeetingTime = userTimes.stream()
                 .filter(e -> e.getKey().equals(time)).findFirst().orElse(null);
@@ -71,8 +68,8 @@ public class MagicCalendar {
             return false;
         } else {
             userTimes.add(Map.entry(time, type));
+            return true;
         }
-        return true;
     }
 
     /**
